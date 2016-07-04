@@ -62,7 +62,7 @@ import java.util.StringTokenizer;
  * @version $Id: NonRegisteringDriver.java,v 1.1.2.1 2005/05/13 18:58:38
  *          mmatthews Exp $
  * 
- * @see org.gjt.mm.mysql.Connection
+ * //@see org.gjt.mm.mysql.Connection
  * @see java.sql.Driver
  */
 public class NonRegisteringDriver implements java.sql.Driver {
@@ -254,7 +254,7 @@ public class NonRegisteringDriver implements java.sql.Driver {
 	 * 
 	 * @see java.sql.Driver#connect
 	 */
-	public java.sql.Connection connect(String url, Properties info)
+	public Connection connect(String url, Properties info)
 			throws SQLException {
 		Properties props = null;
 
@@ -263,10 +263,9 @@ public class NonRegisteringDriver implements java.sql.Driver {
 		}
 
 		try {
-			Connection newConn = new com.mysql.jdbc.Connection(host(props),
+			return new com.mysql.jdbc.Connection(host(props),
 					port(props), props, database(props), url, this);
 
-			return newConn;
 		} catch (SQLException sqlEx) {
 			// Don't wrap SQLExceptions, throw
 			// them un-changed.
