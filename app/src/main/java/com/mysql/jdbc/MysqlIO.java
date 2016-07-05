@@ -960,9 +960,11 @@ class MysqlIO {
                     if(newResultSet == null){
                         return null;
                     }
-                    status3 = 0;
+                    status3 = 2;
                     return newResultSet;
                 }
+            }else{
+                status3 = 0;
             }
         }
         return null;
@@ -970,52 +972,6 @@ class MysqlIO {
 
     //completa
     void sendSqlQueryNoBlock(String query, String characterEncoding, Buffer queryPacket) throws Exception{
-
-        if (query != null) {
-
-
-            // We don't know exactly how many bytes we're going to get
-            // from the query. Since we're dealing with Unicode, the
-            // max is 2, so pad it (2 * query) + space for headers
-            int packLength = HEADER_LENGTH + 1 + (query.length() * 2) + 2;
-
-            if (this.sendPacket == null) {
-                if (this.useNewIo) {
-                    this.sendPacket = Buffer.allocateDirect(packLength,
-                            this.useNewIo);
-                } else {
-                    this.sendPacket = Buffer.allocateNew(packLength, false);
-                }
-            } else {
-                this.sendPacket.clear();
-            }
-            //Pone el comando en el paquete
-            this.sendPacket.writeByte((byte) MysqlDefs.QUERY);
-
-            //Pone la Query en el paquete
-            if (characterEncoding != null) {
-                if (this.platformDbCharsetMatches) {
-                    this.sendPacket.writeStringNoNull(query, characterEncoding,
-                            this.connection.getServerCharacterEncoding(),
-                            this.connection.parserKnowsUnicode());
-                } else {
-                    if (StringUtils.startsWithIgnoreCaseAndWs(query, "LOAD DATA")) { //$NON-NLS-1$
-                        this.sendPacket.writeBytesNoNull(query.getBytes());
-                    } else {
-                        this.sendPacket.writeStringNoNull(query,
-                                characterEncoding,
-                                this.connection.getServerCharacterEncoding(),
-                                this.connection.parserKnowsUnicode());
-                    }
-                }
-            } else {
-                this.sendPacket.writeStringNoNull(query);
-            }
-
-            queryPacket = this.sendPacket;
-        }
-
-
         // Send query command and sql query string
         sendCommandNoBlock(MysqlDefs.QUERY, null, queryPacket, null);
     }
