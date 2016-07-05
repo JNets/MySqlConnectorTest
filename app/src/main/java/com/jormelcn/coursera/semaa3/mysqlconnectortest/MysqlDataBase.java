@@ -178,6 +178,10 @@ public class MysqlDataBase implements MysqlAsync.OnConnectionResultListener{
         mysqlAsync.executeQuery(sqlQuery, onQueryResultListener);
     }
 
+    public void test(){
+        mysqlAsync.executeTest();
+    }
+
     @Override
     public void onOpenResult(boolean result) {
         if(result) {

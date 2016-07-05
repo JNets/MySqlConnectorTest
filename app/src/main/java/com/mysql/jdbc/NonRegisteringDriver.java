@@ -254,7 +254,7 @@ public class NonRegisteringDriver implements java.sql.Driver {
 	 * 
 	 * @see java.sql.Driver#connect
 	 */
-	public Connection connect(String url, Properties info)
+	public java.sql.Connection connect(String url, Properties info)
 			throws SQLException {
 		Properties props = null;
 

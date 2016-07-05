@@ -96,4 +96,17 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "La Base de Datos está cerrada", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public void testProcedureOnDataBase(View view){
+        if(mysqlDataBase.isOnLine()){
+            try {
+                mysqlDataBase.test();
+            }catch (NumberFormatException e){
+                e.printStackTrace();
+            }
+        }
+        else{
+            Toast.makeText(this, "La Base de Datos está cerrada", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.DriverManager;
@@ -29,6 +30,7 @@ public class MysqlAsync {
 
     private Connection connection = null;
     private Statement statement = null;
+    private PreparedStatement testStatement = null;
 
     private static final int IDLE = 0;
     private static final int ON_QUERY = 1;
@@ -102,8 +104,8 @@ public class MysqlAsync {
                 try {
                     Class.forName("com.mysql.jdbc.Driver").newInstance();
                     connection = DriverManager.getConnection(url, user, password);
-
                     statement = connection.createStatement();
+                    testStatement = connection.prepareStatement("CALL test_procedure()");
                     return true;
                 }catch (Exception e){
                     connection = null;
@@ -155,6 +157,22 @@ public class MysqlAsync {
 
     public boolean isOpen(){
         return statement != null && connection != null;
+    }
+
+    public void executeTest(){
+        class ExecuteTest extends AsyncTask<Void,Void,Void> {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                try{
+                    testStatement.execute();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }
+        new ExecuteTest().execute();
     }
 
     public void executeQuery(String sqlQuery, final OnQueryResultListener onQueryResultListener){
