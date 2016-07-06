@@ -3156,7 +3156,7 @@ public class Connection extends ConnectionProperties implements
 	 * @throws SQLException
 	 *             passed through from the constructor
 	 */
-	public java.sql.Statement createStatement() throws SQLException {
+	public Statement createStatement() throws SQLException {
 		return createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
 				java.sql.ResultSet.CONCUR_READ_ONLY);
 	}
@@ -3173,7 +3173,7 @@ public class Connection extends ConnectionProperties implements
 	 * @exception SQLException
 	 *                if a database-access error occurs.
 	 */
-	public java.sql.Statement createStatement(int resultSetType,
+	public Statement createStatement(int resultSetType,
 			int resultSetConcurrency) throws SQLException {
 		checkClosed();
 
@@ -4627,7 +4627,7 @@ public class Connection extends ConnectionProperties implements
 	 * @exception SQLException
 	 *                if a database access error occurs.
 	 */
-	public java.sql.PreparedStatement prepareStatement(String sql)
+	public PreparedStatement prepareStatement(String sql)
 			throws SQLException {
 		return prepareStatement(sql, java.sql.ResultSet.TYPE_FORWARD_ONLY,
 				java.sql.ResultSet.CONCUR_READ_ONLY);
@@ -4661,7 +4661,7 @@ public class Connection extends ConnectionProperties implements
 	 * @exception SQLException
 	 *                if a database-access error occurs.
 	 */
-	public synchronized java.sql.PreparedStatement prepareStatement(String sql,
+	public synchronized PreparedStatement prepareStatement(String sql,
 			int resultSetType, int resultSetConcurrency) throws SQLException {
 		checkClosed();
 

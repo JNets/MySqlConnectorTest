@@ -3,10 +3,17 @@ package com.jormelcn.coursera.semaa3.mysqlconnectortest;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+//import java.sql.Connection;
+//import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
+//import java.sql.Statement;
+//import java.sql.DriverManager;
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.Driver;
+import com.mysql.jdbc.PreparedStatement;
+//import com.mysql.jdbc.ResultSet;
+import com.mysql.jdbc.Statement;
+
 import java.sql.DriverManager;
 import java.util.Properties;
 
@@ -27,6 +34,8 @@ public class MysqlAsync {
     private String url;
     private String user;
     private String password;
+
+    private Driver driver;
 
     private Connection connection = null;
     private Statement statement = null;
@@ -84,11 +93,18 @@ public class MysqlAsync {
     private  QueryResult queryResult = null;
 
 
-    public MysqlAsync(String server, int port, String dataBase, String user, String password){
+    public MysqlAsync(String server, int port, String dataBase, String user, String password) {
         url = "jdbc:mysql://" + server + ":" + String.valueOf(port);
         if(dataBase != null){
             url += "/" + dataBase;
         }
+        try {
+            driver = new Driver();
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.i("MysqlAsync", "Error al crear el driver");
+        }
+
         this.user = user;
         this.password = password;
     }
@@ -102,8 +118,7 @@ public class MysqlAsync {
             @Override
             protected Boolean doInBackground(Void... params) {
                 try {
-                    Class.forName("com.mysql.jdbc.Driver").newInstance();
-                    connection = DriverManager.getConnection(url, user, password);
+                    connection = driver.getConnection(url, user, password);
                     statement = connection.createStatement();
                     testStatement = connection.prepareStatement("CALL test_procedure()");
                     return true;

@@ -24,7 +24,7 @@
 
 package com.mysql.jdbc;
 
-import java.sql.Connection;
+//import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -48,7 +48,8 @@ public class NonRegisteringReplicationDriver extends NonRegisteringDriver {
 	 * @see java.sql.Driver#connect(java.lang.String, java.util.Properties)
 	 */
 	public Connection connect(String url, Properties info) throws SQLException {
-		Properties parsedProps = parseURL(url, info);
+		return  null;
+		/*Properties parsedProps = parseURL(url, info);
 
 		if (parsedProps == null) {
 			return null;
@@ -113,6 +114,6 @@ public class NonRegisteringReplicationDriver extends NonRegisteringDriver {
 			slavesProps.setProperty(HOST_PROPERTY_KEY, slaveHosts.toString());
 		}
 
-		return new ReplicationConnection(masterProps, slavesProps);
+		return new ReplicationConnection(masterProps, slavesProps);*/
 	}
 }
