@@ -3252,6 +3252,7 @@ public class Connection extends ConnectionProperties implements
 			Buffer packet, int resultSetType, int resultSetConcurrency,
 			boolean streamResults, boolean queryIsSelectOnly, String catalog,
 			boolean unpackFields) throws SQLException {
+
 		return execSQL(callingStatement, sql, maxRows, packet, resultSetType,
 				resultSetConcurrency, streamResults, queryIsSelectOnly,
 				catalog, unpackFields, Statement.USES_VARIABLES_FALSE, false);
@@ -3399,6 +3400,30 @@ public class Connection extends ConnectionProperties implements
 			}
 		}
 	}
+
+    protected void execSQLNoBlock(Buffer packet) throws Exception {
+
+        synchronized (this.mutex) {
+
+            try {
+                this.io.sendSqlQueryNoBlock(packet);
+            } catch (java.sql.SQLException sqlE) {
+                throw sqlE;
+            } catch (Exception ex) {
+                throw new java.sql.SQLException(
+                        "Error during query: Unexpected Exception: ",
+                        SQLError.SQL_STATE_GENERAL_ERROR);
+            }
+        }
+    }
+
+    protected ResultSet readResultSetNoBlock(Statement callingStatement, int maxRows,
+                                      int resultSetType, int resultSetConcurrency,
+                                      boolean streamResults, String catalog, boolean unpackFieldInfo) throws Exception{
+
+       return  this.io.readResultSet(callingStatement,maxRows,resultSetType, resultSetConcurrency,streamResults,
+               catalog,unpackFieldInfo);
+    }
 
 	protected String extractSqlFromPacket(String possibleSqlQuery,
 			Buffer queryPacket, int endOfQueryPacketPosition)

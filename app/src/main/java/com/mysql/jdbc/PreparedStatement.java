@@ -827,6 +827,47 @@ public class PreparedStatement extends com.mysql.jdbc.Statement implements
 		return ((rs != null) && rs.reallyResult());
 	}
 
+    public void sendQuery() throws Exception {
+        checkClosed();
+
+        synchronized (this.connection.getMutex()) {
+            clearWarnings();
+
+            Buffer sendPacket = fillSendPacket();
+
+            executeInternalNoBlock(sendPacket);
+
+        }
+    }
+
+    public ResultSet readResultSet() throws Exception {
+        checkClosed();
+        ResultSet rs = null;
+
+        synchronized (this.connection.getMutex()) {
+
+            this.batchedGeneratedKeys = null;
+
+            String oldCatalog = null;
+
+            if (!this.connection.getCatalog().equals(this.currentCatalog)) {
+                oldCatalog = this.connection.getCatalog();
+                this.connection.setCatalog(this.currentCatalog);
+            }
+
+            boolean oldInfoMsgState = false;
+
+            if (this.retrieveGeneratedKeys) {
+                oldInfoMsgState = this.connection.isReadInfoMsgEnabled();
+                this.connection.setReadInfoMsgEnabled(true);
+            }
+
+            rs = readResultSetInternalNoBlock(-1,createStreamingResultSet(),true);
+        }
+        return  rs;
+
+    }
+
 	/**
 	 * JDBC 2.0 Submit a batch of commands to the database for execution. This
 	 * method is optional.
@@ -1144,6 +1185,20 @@ public class PreparedStatement extends com.mysql.jdbc.Statement implements
 
 		return rs;
 	}
+
+	protected void executeInternalNoBlock(Buffer sendPacket)
+			throws Exception {
+		this.numberOfExecutions++;
+
+		this.connection.execSQLNoBlock(sendPacket);
+
+	}
+
+    protected ResultSet readResultSetInternalNoBlock(int maxRowsToRetrieve, boolean createStreamingResultSet,
+                                                     boolean unpackFields) throws Exception{
+        return this.connection.readResultSetNoBlock(this,maxRowsToRetrieve, this.resultSetType, this.resultSetConcurrency,
+                createStreamingResultSet, this.currentCatalog, unpackFields);
+    }
 
 	/**
 	 * A Prepared SQL query is executed and its ResultSet is returned

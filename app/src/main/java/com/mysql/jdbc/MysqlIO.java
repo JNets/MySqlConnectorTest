@@ -971,15 +971,14 @@ class MysqlIO {
     }
 
     //completa
-    void sendSqlQueryNoBlock(String query, String characterEncoding, Buffer queryPacket) throws Exception{
+    void sendSqlQueryNoBlock(Buffer queryPacket) throws Exception{
         // Send query command and sql query string
         sendCommandNoBlock(MysqlDefs.QUERY, null, queryPacket, null);
     }
 
     //Completa
     Buffer resultPacket = null;
-    ResultSet readResultSet(Statement callingStatement, String query, Buffer queryPacket,
-                            int maxRows, int resultSetType, int resultSetConcurrency,
+    ResultSet readResultSet(Statement callingStatement, int maxRows, int resultSetType, int resultSetConcurrency,
                             boolean streamResults, String catalog, boolean unpackFieldInfo) throws Exception{
 
         if(resultPacket == null) {
