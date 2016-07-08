@@ -254,20 +254,6 @@ public class NonRegisteringDriver implements java.sql.Driver {
 	 * 
 	 * @see java.sql.Driver#connect
 	 */
-	public Connection getConnection(String url, String user, String password) throws Exception{
-		Properties theProperties = new Properties();
-		if (user != null) {
-			theProperties.setProperty("user", user);
-		}
-		if (password != null) {
-			theProperties.setProperty("password", password);
-		}
-		String sqlState = "08001";
-		if (url == null) {
-			throw new SQLException("The url cannot be null", sqlState);
-		}
-		return connect(url,theProperties);
-	}
 
 	public Connection connect(String url, Properties info)
 			throws SQLException {
@@ -293,6 +279,21 @@ public class NonRegisteringDriver implements java.sql.Driver {
 					SQLError.SQL_STATE_UNABLE_TO_CONNECT_TO_DATASOURCE);
 		}
 	}
+
+    public Connection getConnection(String url, String user, String password) throws Exception{
+        Properties theProperties = new Properties();
+        if (user != null) {
+            theProperties.setProperty("user", user);
+        }
+        if (password != null) {
+            theProperties.setProperty("password", password);
+        }
+        String sqlState = "08001";
+        if (url == null) {
+            throw new SQLException("The url cannot be null", sqlState);
+        }
+        return connect(url,theProperties);
+    }
 
 	/**
 	 * Returns the database property from <code>props</code>

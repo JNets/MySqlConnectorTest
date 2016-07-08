@@ -1,7 +1,13 @@
 package com.jormelcn.coursera.semaa3.mysqlconnectortest;
 
+import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.jormelcn.coursera.semaa3.mysqlconnector31test.R;
+import com.mysql.jdbc.RealTimeMysqlReader;
 
 import java.sql.ResultSet;
 import java.sql.Time;
@@ -25,13 +31,14 @@ public class MysqlDataBase implements MysqlAsync.OnConnectionResultListener{
     private static final String TAG_ID = " id ";
     private static final String TAG_NAME = " nombre ";
     private static final String TAG_LAST_NAME = " apellido ";
-
-    private Context context;
+    private TextView tv;
+    private Activity context;
 
     private static MysqlAsync mysqlAsync = null;
 
-    public MysqlDataBase(Context context){
+    public MysqlDataBase(Activity context){
         this.context = context;
+        tv = (TextView) context.findViewById(R.id.resultTest);
         if(mysqlAsync == null) {
             mysqlAsync = new MysqlAsync(SERVER, PORT, DATA_BASE, USER, PASSWORD);
         }
@@ -178,8 +185,28 @@ public class MysqlDataBase implements MysqlAsync.OnConnectionResultListener{
         mysqlAsync.executeQuery(sqlQuery, onQueryResultListener);
     }
 
-    public void test(){
-        mysqlAsync.executeTest();
+    public void test() {
+        mysqlAsync.executeTest(new RealTimeMysqlReader.Listener<Integer>() {
+            @Override
+            public void onResult(Integer result) {
+                tv.setText(String.valueOf(result));
+            }
+        }, new RealTimeMysqlReader.ResultSetAdapter<Integer>() {
+            @Override
+            public Integer parse(ResultSet resultSet) {
+                try {
+                    resultSet.next();
+                    return resultSet.getInt(1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        });
+    }
+
+    public void pauseTest(){
+        mysqlAsync.pauseTest();
     }
 
     @Override

@@ -81,7 +81,16 @@ import com.mysql.jdbc.profiler.ProfilerEvent;
  */
 public class PreparedStatement extends com.mysql.jdbc.Statement implements
 		java.sql.PreparedStatement {
-	class BatchParams {
+
+    public void setRealTimeTask(RealTimeMysqlReader.RealTimeTask realTimeTask){
+        this.connection.setRealTimeTask(realTimeTask);
+    }
+
+    public void setResultSetAdapter(RealTimeMysqlReader.ResultSetAdapter resultSetAdapter){
+        this.connection.setResultSetAdapter(resultSetAdapter);
+    }
+
+    class BatchParams {
 		boolean[] isNull = null;
 
 		boolean[] isStream = null;

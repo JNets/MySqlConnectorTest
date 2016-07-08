@@ -12,10 +12,8 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Driver;
 import com.mysql.jdbc.PreparedStatement;
 //import com.mysql.jdbc.ResultSet;
+import com.mysql.jdbc.RealTimeMysqlReader;
 import com.mysql.jdbc.Statement;
-
-import java.sql.DriverManager;
-import java.util.Properties;
 
 
 /**
@@ -40,6 +38,7 @@ public class MysqlAsync {
     private Connection connection = null;
     private Statement statement = null;
     private PreparedStatement testStatement = null;
+    RealTimeMysqlReader<Integer> realTimeMysqlReader = null;
 
     private static final int IDLE = 0;
     private static final int ON_QUERY = 1;
@@ -121,6 +120,7 @@ public class MysqlAsync {
                     connection = driver.getConnection(url, user, password);
                     statement = connection.createStatement();
                     testStatement = connection.prepareStatement("CALL test_procedure()");
+                    realTimeMysqlReader = new RealTimeMysqlReader<>(testStatement);
                     return true;
                 }catch (Exception e){
                     connection = null;
@@ -174,20 +174,14 @@ public class MysqlAsync {
         return statement != null && connection != null;
     }
 
-    public void executeTest(){
-        class ExecuteTest extends AsyncTask<Void,Void,Void> {
+    public void executeTest(RealTimeMysqlReader.Listener<Integer> listener, RealTimeMysqlReader.ResultSetAdapter<Integer> adapter){
+        realTimeMysqlReader.setListener(listener);
+        realTimeMysqlReader.setResultSetAdapter(adapter);
+        realTimeMysqlReader.run();
+    }
 
-            @Override
-            protected Void doInBackground(Void... params) {
-                try{
-                    testStatement.execute();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        }
-        new ExecuteTest().execute();
+    public void pauseTest(){
+        realTimeMysqlReader.pause();
     }
 
     public void executeQuery(String sqlQuery, final OnQueryResultListener onQueryResultListener){

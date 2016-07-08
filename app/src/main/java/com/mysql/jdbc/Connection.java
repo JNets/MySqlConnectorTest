@@ -87,6 +87,15 @@ import java.util.TreeMap;
  */
 public class Connection extends ConnectionProperties implements
 		java.sql.Connection {
+
+    public void setRealTimeTask(RealTimeMysqlReader.RealTimeTask realTimeTask){
+        this.io.setRealTimeTask(realTimeTask);
+    }
+
+    public void setResultSetAdapter(RealTimeMysqlReader.ResultSetAdapter resultSetAdapter){
+        this.io.setResultSetAdapter(resultSetAdapter);
+    }
+
 	@Override
 	public <T> T unwrap(Class<T> iface) throws SQLException {
 		return null;

@@ -54,7 +54,6 @@ import java.nio.channels.SocketChannel;
 
 import java.security.NoSuchAlgorithmException;
 
-import java.sql.DataTruncation;
 import java.sql.SQLException;
 
 import java.util.ArrayList;
@@ -74,6 +73,18 @@ import java.util.zip.Deflater;
  * @see java.sql.Connection
  */
 class MysqlIO {
+
+    protected RealTimeMysqlReader.RealTimeTask realTimeTask;
+    protected RealTimeMysqlReader.ResultSetAdapter resultSetAdapter;
+
+    public void setRealTimeTask(RealTimeMysqlReader.RealTimeTask realTimeTask) {
+        this.realTimeTask = realTimeTask;
+    }
+
+    public void setResultSetAdapter(RealTimeMysqlReader.ResultSetAdapter resultSetAdapter){
+        this.resultSetAdapter = resultSetAdapter;
+    }
+
     protected static final int NULL_LENGTH = ~0;
     protected static final int COMP_HEADER_LENGTH = 3;
     protected static final int MIN_COMPRESS_LEN = 50;
@@ -2099,6 +2110,12 @@ class MysqlIO {
                 unpackFieldInfo);
 
         ResultSet currentResultSet = topLevelResultSet;
+        if(currentResultSet != null) {
+            Log.i("MYSQL", "Resultado");
+            if(realTimeTask != null && resultSetAdapter != null) {
+                realTimeTask.showResults(resultSetAdapter.parse(currentResultSet));
+            }
+        }
 
         boolean checkForMoreResults = ((this.clientParam &
             CLIENT_MULTI_RESULTS) != 0);
@@ -2136,7 +2153,12 @@ class MysqlIO {
             currentResultSet.setNextResultSet(newResultSet);
 
             currentResultSet = newResultSet;
-
+            if(currentResultSet != null) {
+                Log.i("MYSQL", "Resultado");
+                if(realTimeTask != null && resultSetAdapter != null) {
+                    realTimeTask.showResults(resultSetAdapter.parse(currentResultSet));
+                }
+            }
             moreRowSetsExist = (this.serverStatus & SERVER_MORE_RESULTS_EXISTS) != 0;
         }
 
@@ -2621,6 +2643,17 @@ class MysqlIO {
             }
 
             n += count;
+
+            if(realTimeTask != null && resultSetAdapter != null) {
+                if(realTimeTask.isCancelled()){
+                    try {
+                        //sendCommand(MysqlDefs.PROCESS_KILL, null, null, false, null);
+                        sendCommandNoBlock(MysqlDefs.PROCESS_KILL, null, null, null);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
 
         return n;
